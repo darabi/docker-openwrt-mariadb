@@ -2,7 +2,7 @@ docker-openwrt-mariadb
 ======================
 A docker container for running  MariaDB server which extends OpenWrt x86_64
 
-For run you need to create a folder for storing data:
+To run you need to create a folder for storing data:
 ```
 mkdir /mariadb-data
 ```
@@ -18,7 +18,7 @@ For testing that server is running:
 ```
 mysql --protocol=TCP -uroot -proot -hlocalhost -P3306 -Bse "show databases;
 ```
-And if the password is correct and server is running fine you should see following result:
+And if the password is correct and the server is running fine you should see following result:
 ```
 Warning: Using a password on the command line interface can be insecure.
 information_schema

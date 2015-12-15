@@ -1,4 +1,8 @@
+## -*- docker-image-name: "mcreations/openwrt-mariadb" -*-
+
 FROM mcreations/openwrt-x64
+
+MAINTAINER Reza Rahimi <rahimi@m-creations.net>
 
 VOLUME /data/
 
@@ -10,9 +14,8 @@ RUN mkdir -p /data/{mariadb,tmp} && \
     sed -i "s/^bind-address.*$/bind-address = 0.0.0.0/g" /etc/mysql/my.cnf && \
     sed -i "s|/var/run/mariadb.sock|/tmp/run/mariadb.sock|g" /etc/mysql/my.cnf && \
     sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysql_install_db && \
-    sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysqld_safe
- 
-RUN mkdir /docker-entrypoint-initdb.d
+    sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysqld_safe && \
+    mkdir -p /docker-entrypoint-initdb.d
 
 ENTRYPOINT ["/mariadb.sh"]
 

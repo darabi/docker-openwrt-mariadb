@@ -13,6 +13,7 @@ RUN mkdir -p /data/{mariadb,tmp} && \
     opkg install mariadb-server mariadb-client mariadb-client-extra && \
     sed -i "s/^bind-address.*$/bind-address = 0.0.0.0/g" /etc/mysql/my.cnf && \
     sed -i "s|/var/run/mariadb.sock|/tmp/run/mariadb.sock|g" /etc/mysql/my.cnf && \
+    sed -i "s|/.*binlog_format.*|binlog_format=mixed|g" /etc/mysql/my.cnf && \
     sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysql_install_db && \
     sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysqld_safe && \
     mkdir -p /docker-entrypoint-initdb.d

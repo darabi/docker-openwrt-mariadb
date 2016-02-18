@@ -86,13 +86,19 @@ if [ "$1" = 'mysqld' ]; then
 			echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
 		fi
 
-		echo
+		# unpack any compressed files
 		for f in $INIT_DIR/*; do
 			case "$f" in
-				*.gz) gunzip $f ; $f=$(basename $f .gz) ;&
-				*.bz2) bunzip2 $f ; $f=$(basename $f .bz2) ;&
-				*.sh)  echo "$0: running $f"; "$f" && printf "\n=== Successfully  executed $f\n" && mv "$f" $INIT_DIR/imported || printf "\n=== Error while executing $f\n" ;;
-				*.sql) echo "$0: running $f"; "${mysql[@]}" < "$f" && printf "\n=== Successfully imported $f\n" && mv "$f" $INIT_DIR/imported || printf "\n=== Error while importing $f\n"  ;;
+				*.gz) gunzip $f ; f=$(basename $f .gz) ;;
+				*.bz2) bunzip2 $f ; f=$(basename $f .bz2) ;;
+			esac
+		done
+		echo
+		# execute .sh and import .sql
+		for f in $INIT_DIR/*; do
+			case "$f" in
+				*.sh)  echo "$0: running $f"; chmod a+x "$f" && "$f" && printf "\n=== Successfully  executed $f\n" && mv "$f" $INIT_DIR/imported && gzip $INIT_DIR/imported/$(basename $f)  || printf "\n=== Error while executing $f\n" ;;
+				*.sql) echo "$0: importing $f"; "${mysql[@]}" < "$f" && printf "\n=== Successfully imported $f\n" && mv "$f" $INIT_DIR/imported && gzip $INIT_DIR/imported/$(basename $f) || printf "\n=== Error while importing $f\n"  ;;
 				imported) ;;
 				*)     echo "$0: ignoring $f" ;;
 			esac

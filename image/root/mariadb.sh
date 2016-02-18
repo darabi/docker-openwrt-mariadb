@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+function shut_down() {
+		echo "Shutting down"
+		kill -TERM $pid 2>/dev/null
+}
+
+trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT EXIT
+
+
 # TODO: remove this backward compatibility hack, as we renamed the env
 # var from MYSQL_ROOT_PASSWORD to PASSWORD
 if [[ -z "$PASSWORD" && ! -z "$MYSQL_ROOT_PASSWORD" ]] ; then
@@ -99,10 +107,12 @@ if [ "$1" = 'mysqld' ]; then
 		echo
 	fi
 
-	chown -R root:root "$DATADIR"
 fi
 
-exec "$@"
+exec "$@" &
+pid=$!
+
+wait
 
 # Local Variables:
 # mode: shell-script

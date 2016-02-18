@@ -9,8 +9,8 @@ VOLUME /data/
 # must be specified when starting the container
 ENV PASSWORD=""
 
-ENV DATADIR=/data/mariadb/
-ENV INIT_DIR=/data/dbinit/
+ENV DATADIR=/data/mariadb
+ENV INIT_DIR=/data/dbinit
 
 ADD image/root/ /
 

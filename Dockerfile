@@ -14,9 +14,9 @@ ENV INIT_DIR=/data/dbinit/
 
 ADD image/root/ /
 
-RUN mkdir -p /data/{mariadb,tmp} && \
-    opkg update && \
+RUN opkg update && \
     opkg install mariadb-server mariadb-client mariadb-client-extra && \
+    rm /tmp/opkg-lists/* &&\
     sed -i "s/^bind-address.*$/bind-address = 0.0.0.0/g" /etc/mysql/my.cnf && \
     sed -i "s|/var/run/mariadb.sock|/tmp/run/mariadb.sock|g" /etc/mysql/my.cnf && \
     sed -i "s|/.*binlog_format.*|binlog_format=mixed|g" /etc/mysql/my.cnf && \

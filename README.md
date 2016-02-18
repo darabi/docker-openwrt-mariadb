@@ -1,10 +1,6 @@
 # docker-openwrt-mariadb
 
-<table width="100%" border=0>
-  <tr>
-    <td align="right"><img src="https://img.shields.io/imagelayers/image-size/mcreations/openwrt-mariadb/latest.svg"/></td>
-  </tr>
-</table>
+![Docker image size](https://img.shields.io/imagelayers/image-size/mcreations/openwrt-mariadb/latest.svg)
 
 A docker container for running [MariaDB](http://mariadb.org) server
 and client which extends [OpenWrt x86_64](http://openwrt.org) for

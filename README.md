@@ -73,6 +73,58 @@ You can use container linking to link to a running MariaDB container
 docker run --rm -it --link mariadb:db mcreations/openwrt-mariadb mysql -uroot -proot -h db
 ```
 
+## Extending the image
+
+You can extend the image to import a DB dump as initial content of the
+database. The startup script contains a mechanism for importing sql
+scripts and executing shell scripts. You just have to follow some simple rules:
+
+- the directory to add files to is `/data/dbinit`
+
+- add your uncompressed sql scripts with extension `.sql`
+
+- you can compress large files with bzip2 (file extension `.sql.bz2`),
+  or gzip (file extension `.sql.gz`)
+
+- add your shell scripts with extension .sh (or `.sh.bz2`, or `.sh.gz`)
+
+- the shell scripts are executed, not 'sourced', so you have to use
+  `exit errno` to indicate an error
+
+- in case of successful execution/import, the file is compressed and
+  moved to `/data/dbinit/imported`
+
+- in case of errors, the file remains in `/data/dbinit`
+
+The simplest repository layout for extending the image is thus:
+
+```
+.
+├── Dockerfile
+└── dbinit
+    ├── 000-first-shell-script.sh
+    ├── 001-dump-from-last-friday.sql.bz2
+    └── 002-second-longish-shell-script.sh.gz
+```
+
+where the Dockerfile contains:
+
+```
+FROM mcreations/openwrt-mariadb
+
+ADD dbinit/ /data/dbinit
+```
+
+Now you can build and enjoy:
+
+```
+docker build -t myname/my-db .
+
+docker run --name db -d -e PASSWORD=tiger myname/my-db 
+
+docker exec -it db mysql -uroot -ptiger
+```
+
 # Github Repo
 
 https://github.com/m-creations/docker-openwrt-mariadb/

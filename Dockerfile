@@ -6,6 +6,12 @@ MAINTAINER Reza Rahimi <rahimi@m-creations.net>
 
 VOLUME /data/
 
+# must be specified when starting the container
+ENV PASSWORD=""
+
+ENV DATADIR=/data/mariadb/
+ENV INIT_DIR=/data/dbinit/
+
 ADD image/root/ /
 
 RUN mkdir -p /data/{mariadb,tmp} && \
@@ -15,8 +21,7 @@ RUN mkdir -p /data/{mariadb,tmp} && \
     sed -i "s|/var/run/mariadb.sock|/tmp/run/mariadb.sock|g" /etc/mysql/my.cnf && \
     sed -i "s|/.*binlog_format.*|binlog_format=mixed|g" /etc/mysql/my.cnf && \
     sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysql_install_db && \
-    sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysqld_safe && \
-    mkdir -p /docker-entrypoint-initdb.d
+    sed -i "s/\`hostname\`/\"\$HOSTNAME\"/g" /usr/bin/mysqld_safe
 
 ENTRYPOINT ["/mariadb.sh"]
 

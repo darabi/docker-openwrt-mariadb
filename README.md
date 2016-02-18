@@ -1,30 +1,82 @@
-docker-openwrt-mariadb
-======================
-A docker container for running  MariaDB server which extends OpenWrt x86_64
+# docker-openwrt-mariadb
 
-To run you need to create a folder for storing data:
+<table width="100%" border=0>
+  <tr>
+    <td align="right"><img src="https://img.shields.io/imagelayers/image-size/mcreations/openwrt-mariadb/latest.svg"/></td>
+  </tr>
+</table>
+
+A docker container for running [MariaDB](http://mariadb.org) server
+and client which extends [OpenWrt x86_64](http://openwrt.org) for
+minimal size.
+
+## How to run
+
+The container can be run as a MariaDB server or client.
+
+### Run as server
+
+The most simple way to run the container is to specify the root password with
+`-e`:
+
 ```
-mkdir /mariadb-data
+docker run --name mariadb -e PASSWORD=root -d mcreations/openwrt-mariadb
 ```
-MySQL root password should pass to Docker with -e switch:
+
+The startup is currently quite verbose (for debugging purposes) and if
+successful, ends with:
+
 ```
--e MYSQL_ROOT_PASSWORD=root
+MariaDB init process done. Ready for start up.
+...
+[Note] mysqld (mysqld 10.x.y-MariaDB-wsrep-log) starting as process ...
+...
+[Note] Server socket created on IP: '0.0.0.0'.
+...
+[Note] mysqld: ready for connections.
+Version: '10.x.y-MariaDB-wsrep-log'  socket: '/tmp/run/mariadb.sock'  port: 3306  Source distribution, wsrep_a.b.rnnnn
 ```
-Example run command:
+
+You can now run a MariaDB client inside this container:
+
 ```
-docker run --name <mariadb> -p 3306:3306 -v /mariadb-data:/data -e MYSQL_ROOT_PASSWORD=root --rm -it mcreations/openwrt-mariad
+docker exec -it mariadb mysql -uroot -proot
 ```
-For testing that server is running:
+
+#### Location of data
+
+When run as a server, the data is stored in the `/data` directory
+inside the container. You can mount a volume from the host with:
+
 ```
-mysql --protocol=TCP -uroot -proot -hlocalhost -P3306 -Bse "show databases;
+docker run -v $HOME/data:/data -e PASSWORD=root -d mcreations/openwrt-mariadb
 ```
-And if the password is correct and the server is running fine you should see following result:
+
+#### Exposing port 3306
+
+If you want to connect to the MariaDB server directly from your host
+or from another machine, you can expose the TCP port `3306`:
+
 ```
-Warning: Using a password on the command line interface can be insecure.
-information_schema
-mysql
-performance_schema
+docker run -p 3306:3306 -e PASSWORD=root -d mcreations/openwrt-mariadb
 ```
-Github Repo
------------
+
+and then connect to it by using the MariaDB/MySQL client which is
+installed on your host:
+
+```
+mysql --protocol=TCP -u root -proot -h localhost -P 3306
+```
+
+### Run as client
+
+You can use container linking to link to a running MariaDB container
+(in this example named `mariadb`):
+
+```
+docker run --rm -it --link mariadb:db mcreations/openwrt-mariadb mysql -uroot -proot -h db
+```
+
+# Github Repo
+
 https://github.com/m-creations/docker-openwrt-mariadb/

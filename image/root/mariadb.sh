@@ -8,6 +8,7 @@ function shut_down() {
 
 trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT EXIT
 
+mkdir -p /data/{mariadb,tmp}
 
 # TODO: remove this backward compatibility hack, as we renamed the env
 # var from MYSQL_ROOT_PASSWORD to PASSWORD
